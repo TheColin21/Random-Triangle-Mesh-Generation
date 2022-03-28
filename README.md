@@ -3,5 +3,3 @@ The algorithm generates a random triangle mesh. This is generated on a HTML div 
 
 Can be used as Wallpapers/Background Images. 
 
-![Input Image](https://github.com/prajwalsouza/Random-Triangle-Mesh-Generation/blob/master/mesh%20image.jpg)
-
