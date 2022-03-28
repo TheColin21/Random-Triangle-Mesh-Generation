@@ -1,13 +1,15 @@
 <html>
-	<head>
-		<title> Triangle Mesh Generation </title>
-	</head>
-	<body style='margin:0px; display: block;'>
-		<svg id='demoSVG' height="100%" width="100%" ></svg>
 
-		<script type="text/javascript">
+<head>
+	<title> Triangle Mesh Generation </title>
+</head>
 
-		demoSlidesvg = document.getElementById('demoSVG')
+<body style='margin:0px; display: block;'>
+	<svg id='polySVG' height="100%" width="100%"></svg>
+
+	<script type="text/javascript">
+
+		demoPolySVG = document.getElementById('polySVG')
 
 		pointsMemoryPrism = []
 		neighbourConnectionData = {}
@@ -34,47 +36,45 @@
 			return inside;
 		};
 
-		
-
 
 		averagedistance = 90
 		radiusdeviation = 60
 		angledeviation = 30
 
-		function getPossibilityRange(thepoint,mainnode) {
+		function getPossibilityRange(thepoint, mainnode) {
 			connectedpoints = neighbourConnectionData[thepoint[0] + ',' + thepoint[1]].slice()
 			pointofinterest = connectedpoints[0]
-			Angle1 = Math.atan2(pointofinterest[1] - thepoint[1],pointofinterest[0] - thepoint[0])*180/Math.PI
+			Angle1 = Math.atan2(pointofinterest[1] - thepoint[1], pointofinterest[0] - thepoint[0]) * 180 / Math.PI
 			if (Angle1 < 0) {
 				Angle1 = 360 + Angle1
 			}
 
 			pointofinterest = connectedpoints[1]
-			Angle2 = Math.atan2(pointofinterest[1] - thepoint[1],pointofinterest[0] - thepoint[0])*180/Math.PI
+			Angle2 = Math.atan2(pointofinterest[1] - thepoint[1], pointofinterest[0] - thepoint[0]) * 180 / Math.PI
 			if (Angle2 < 0) {
 				Angle2 = 360 + Angle2
 			}
 
-			Anglemain = Math.atan2(mainnode[1] - thepoint[1],mainnode[0] - thepoint[0])*180/Math.PI
+			Anglemain = Math.atan2(mainnode[1] - thepoint[1], mainnode[0] - thepoint[0]) * 180 / Math.PI
 			if (Anglemain < 0) {
 				Anglemain = 360 + Anglemain
 			}
 
-			maxvalue = Math.max(Angle1,Angle2)
-			minvalue = Math.min(Angle1,Angle2)
+			maxvalue = Math.max(Angle1, Angle2)
+			minvalue = Math.min(Angle1, Angle2)
 
 			if (Anglemain < maxvalue && Anglemain > minvalue) {
 				possibilityrange = 360 - Math.abs(Angle2 - Angle1)
-				between = [Angle2,Angle1]
+				between = [Angle2, Angle1]
 				startingcue = -1
 			}
 			else {
 				possibilityrange = Math.abs(Angle2 - Angle1)
-				between = [Angle2,Angle1]
+				between = [Angle2, Angle1]
 				startingcue = 1
 			}
 
-			if(minvalue == Angle1) {
+			if (minvalue == Angle1) {
 				startingMneigh = connectedpoints[0]
 				endingMneigh = connectedpoints[1]
 			}
@@ -84,20 +84,19 @@
 			}
 
 
-			return [possibilityrange,between,startingMneigh,endingMneigh,startingcue]
+			return [possibilityrange, between, startingMneigh, endingMneigh, startingcue]
 		}
 
-
-		function pickAngleInRange(rangeLength,extremes,startingcuevalue) {
-			intervaldivision = parseInt(rangeLength/50);
-			minvalue = Math.min(extremes[0],extremes[1])
-			maxvalue = Math.max(extremes[0],extremes[1])
+		function pickAngleInRange(rangeLength, extremes, startingcuevalue) {
+			intervaldivision = parseInt(rangeLength / 50);
+			minvalue = Math.min(extremes[0], extremes[1])
+			maxvalue = Math.max(extremes[0], extremes[1])
 			anglevalues = []
 
 			if (startingcuevalue == 1) {
 				anglevalue = minvalue
-				for (i=0; i < intervaldivision; i++) {
-					anglevalue = anglevalue + 50 + (angledeviation*(Math.random() - 0.5))
+				for (i = 0; i < intervaldivision; i++) {
+					anglevalue = anglevalue + 50 + (angledeviation * (Math.random() - 0.5))
 					if (Math.abs(maxvalue - anglevalue) > 30) {
 						anglevalues.push(anglevalue)
 					}
@@ -105,15 +104,15 @@
 			}
 			else {
 				anglevalue = minvalue
-				for (i=0; i < intervaldivision; i++) {
-					anglevalue = anglevalue - 50 + (angledeviation*(Math.random() - 0.5))
+				for (i = 0; i < intervaldivision; i++) {
+					anglevalue = anglevalue - 50 + (angledeviation * (Math.random() - 0.5))
 					if (anglevalue < 0) {
 						anglevalue = 360 + anglevalue
 					}
 					if (Math.abs(maxvalue - anglevalue) > 30) {
 						anglevalues.push(anglevalue)
 					}
-					
+
 				}
 			}
 
@@ -139,15 +138,13 @@
 			return minIndex;
 		}
 
-		
-		
 		function formPrism() {
 			triangleData = []
 
-			angles = pickAngleInRange(360,[0,390],1)
+			angles = pickAngleInRange(360, [0, 390], 1)
 
 
-			initvalue = [Math.random()*window.innerWidth, Math.random()*window.innerHeight];
+			initvalue = [Math.random() * window.innerWidth, Math.random() * window.innerHeight];
 			currentvalue = initvalue
 
 			pointsList = []
@@ -158,21 +155,21 @@
 
 			for (j = 0; j < angles.length; j++) {
 				angle = angles[j]
-				radius = averagedistance + (radiusdeviation*Math.random())
+				radius = averagedistance + (radiusdeviation * Math.random())
 
-				xvalue = currentvalue[0] + radius*Math.cos(angle*Math.PI/180)
-				yvalue = currentvalue[1] + radius*Math.sin(angle*Math.PI/180)
+				xvalue = currentvalue[0] + radius * Math.cos(angle * Math.PI / 180)
+				yvalue = currentvalue[1] + radius * Math.sin(angle * Math.PI / 180)
 
-				if(inside([xvalue,yvalue],visitablenodes)) {
+				if (inside([xvalue, yvalue], visitablenodes)) {
 					console.log("Point Outside")
 				}
 				else {
-					pointsList.push([xvalue,yvalue])
-					creationNode[xvalue+','+yvalue] = currentvalue
-					if (xvalue <= window.innerWidth*1.2 && xvalue >= -0.2*window.innerWidth && yvalue <= window.innerHeight*1.2 && yvalue >= -0.2*window.innerHeight) {
-						visitablenodes.push([xvalue,yvalue])
+					pointsList.push([xvalue, yvalue])
+					creationNode[xvalue + ',' + yvalue] = currentvalue
+					if (xvalue <= window.innerWidth * 1.2 && xvalue >= -0.2 * window.innerWidth && yvalue <= window.innerHeight * 1.2 && yvalue >= -0.2 * window.innerHeight) {
+						visitablenodes.push([xvalue, yvalue])
 					}
-					currentlist.push([xvalue,yvalue])
+					currentlist.push([xvalue, yvalue])
 				}
 			}
 
@@ -187,7 +184,7 @@
 				if (index >= currentlist.length) {
 					index = index % currentlist.length
 				}
-				
+
 				neighbours.push(currentlist[index])
 
 				index = (k + 1)
@@ -197,17 +194,17 @@
 				if (index >= currentlist.length) {
 					index = index % currentlist.length
 				}
-				
+
 				neighbours.push(currentlist[index])
 
 				point = currentlist[k]
 				neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-				triangleData.push([neighbours[0],point,currentvalue])
+				triangleData.push([neighbours[0], point, currentvalue])
 
 			}
 
 			ranges = []
-			for (m=0; m < visitablenodes.length;m++) {
+			for (m = 0; m < visitablenodes.length; m++) {
 				node = visitablenodes[m]
 				ranges.push(getPossibilityRange(node, currentvalue)[0])
 			}
@@ -216,26 +213,18 @@
 			minvalueindex = indexOfmin(ranges)
 			nextnode = visitablenodes[minvalueindex]
 
-
 			visitablenodes.splice(minvalueindex, 1);
 
+			while (visitablenodes.length != 0) {
 
-
-
-			
-
-
-			while(visitablenodes.length != 0) {
-
-				prange = getPossibilityRange(nextnode, creationNode[nextnode[0]+','+nextnode[1]])
+				prange = getPossibilityRange(nextnode, creationNode[nextnode[0] + ',' + nextnode[1]])
 				mainnodevalue = currentvalue
 				currentvalue = nextnode
 
+				// drawDot(demoPolySVG,currentvalue[0],currentvalue[1], '0.3%', 'blue')
+				// drawText(demoPolySVG,h,currentvalue[0],currentvalue[1],14)
 
-				// drawDot(demoSlidesvg,currentvalue[0],currentvalue[1], '0.3%', 'blue')
-				// drawText(demoSlidesvg,h,currentvalue[0],currentvalue[1],14)
-
-				angles = pickAngleInRange(prange[0],prange[1],prange[4])
+				angles = pickAngleInRange(prange[0], prange[1], prange[4])
 				startingMneigh = prange[2]
 				endingMneigh = prange[3]
 
@@ -243,35 +232,32 @@
 				for (j = 0; j < angles.length; j++) {
 
 					angle = angles[j]
-					radius = averagedistance + (radiusdeviation*Math.random())
+					radius = averagedistance + (radiusdeviation * Math.random())
 
-					xvalue = currentvalue[0] + radius*Math.cos(angle*Math.PI/180)
-					yvalue = currentvalue[1] + radius*Math.sin(angle*Math.PI/180)
+					xvalue = currentvalue[0] + radius * Math.cos(angle * Math.PI / 180)
+					yvalue = currentvalue[1] + radius * Math.sin(angle * Math.PI / 180)
 
-					if(inside([xvalue,yvalue],visitablenodes)) {
+					if (inside([xvalue, yvalue], visitablenodes)) {
 						// console.log("Point Outside")
 					}
 					else {
-						pointsList.push([xvalue,yvalue])
-						creationNode[xvalue+','+yvalue] = currentvalue
-						if (xvalue <= window.innerWidth*1.2 && xvalue >= -0.2*window.innerWidth && yvalue <= window.innerHeight*1.2 && yvalue >= -0.2*window.innerHeight) {
-							visitablenodes.push([xvalue,yvalue])
+						pointsList.push([xvalue, yvalue])
+						creationNode[xvalue + ',' + yvalue] = currentvalue
+						if (xvalue <= window.innerWidth * 1.2 && xvalue >= -0.2 * window.innerWidth && yvalue <= window.innerHeight * 1.2 && yvalue >= -0.2 * window.innerHeight) {
+							visitablenodes.push([xvalue, yvalue])
 						}
-						currentlist.push([xvalue,yvalue])
-						// drawLine(demoSlidesvg,currentvalue[0],currentvalue[1],xvalue,yvalue,'red','0.4%')
-						// drawDot(demoSlidesvg,xvalue,yvalue, '0.3%', 'orange')
-						// drawText(demoSlidesvg,1,xvalue,yvalue,10)
+						currentlist.push([xvalue, yvalue])
+						// drawLine(demoPolySVG,currentvalue[0],currentvalue[1],xvalue,yvalue,'red','0.4%')
+						// drawDot(demoPolySVG,xvalue,yvalue, '0.3%', 'orange')
+						// drawText(demoPolySVG,1,xvalue,yvalue,10)
 					}
 
 				}
-				
 
-
-
-				if(currentlist.length == 0) {
+				if (currentlist.length == 0) {
 					currneighbours = neighbourConnectionData[currentvalue[0] + ',' + currentvalue[1]]
 
-					// drawLine(demoSlidesvg,currneighbours[0][0],currneighbours[0][1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
+					// drawLine(demoPolySVG,currneighbours[0][0],currneighbours[0][1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
 					n1 = currneighbours[0]
 					n1neighbours = neighbourConnectionData[n1[0] + ',' + n1[1]]
 					if (n1neighbours[0][0] == currentvalue[0] && n1neighbours[0][1] == currentvalue[1]) {
@@ -289,10 +275,9 @@
 						n2neighbours.splice(1, 1, currneighbours[0]);
 					}
 
-					triangleData.push([currneighbours[0],currneighbours[1],currentvalue])
+					triangleData.push([currneighbours[0], currneighbours[1], currentvalue])
 
 				}
-
 
 				else if (currentlist.length == 1) {
 
@@ -300,13 +285,11 @@
 					currneighbours = neighbourConnectionData[currentvalue[0] + ',' + currentvalue[1]]
 
 					neighbourConnectionData[point[0] + ',' + point[1]] = currneighbours
-					triangleData.push([currneighbours[0],point,currentvalue])
-					triangleData.push([currneighbours[1],point,currentvalue])
+					triangleData.push([currneighbours[0], point, currentvalue])
+					triangleData.push([currneighbours[1], point, currentvalue])
 
-					// drawLine(demoSlidesvg,currneighbours[0][0],currneighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(demoSlidesvg,point[0],point[1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
-
-
+					// drawLine(demoPolySVG,currneighbours[0][0],currneighbours[0][1],point[0],point[1],'grey','0.2%')
+					// drawLine(demoPolySVG,point[0],point[1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
 
 					sidepoint = currneighbours[0]
 					ngh = neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]].slice();
@@ -335,22 +318,15 @@
 				}
 
 				else {
-
-
 					neighbours = []
 
 					point = currentlist[0]
-					
+
 					neighbours.push(startingMneigh)
 					sidepoint = startingMneigh
-					triangleData.push([startingMneigh,point,currentvalue])
+					triangleData.push([startingMneigh, point, currentvalue])
 					ngh = neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]].slice();
 
-					
-
-						
-
-					
 					if (ngh[0][0] == currentvalue[0] && ngh[0][1] == currentvalue[1]) {
 						ngh.splice(0, 1, point);
 						neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]] = ngh
@@ -363,12 +339,9 @@
 					neighbours.push(currentlist[1])
 
 					neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-					
-					
-					// drawLine(demoSlidesvg,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(demoSlidesvg,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 
-					
+					// drawLine(demoPolySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
+					// drawLine(demoPolySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 
 					for (k = 1; k < currentlist.length - 1; k++) {
 						neighbours = []
@@ -380,7 +353,7 @@
 						if (index >= currentlist.length) {
 							index = index % currentlist.length
 						}
-						
+
 						neighbours.push(currentlist[index])
 
 						index = (k + 1)
@@ -390,32 +363,32 @@
 						if (index >= currentlist.length) {
 							index = index % currentlist.length
 						}
-						
+
 						neighbours.push(currentlist[index])
 
 						point = currentlist[k]
 						neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-						// drawLine(demoSlidesvg,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-						// drawLine(demoSlidesvg,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
-						triangleData.push([neighbours[0],point,currentvalue])
+						// drawLine(demoPolySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
+						// drawLine(demoPolySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
+						triangleData.push([neighbours[0], point, currentvalue])
 
 					}
 
-					triangleData.push([ currentlist[currentlist.length - 2], currentlist[currentlist.length - 1],currentvalue])
+					triangleData.push([currentlist[currentlist.length - 2], currentlist[currentlist.length - 1], currentvalue])
 
-					
+
 
 					neighbours = []
 
 					point = currentlist[currentlist.length - 1]
-					
+
 					neighbours.push(endingMneigh)
 					sidepoint = endingMneigh
 
-					triangleData.push([endingMneigh,point,currentvalue])
+					triangleData.push([endingMneigh, point, currentvalue])
 					ngh = neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]].slice();
 
-					
+
 					if (ngh[0][0] == currentvalue[0] && ngh[0][1] == currentvalue[1]) {
 						ngh.splice(0, 1, point);
 						neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]] = ngh
@@ -428,88 +401,71 @@
 					neighbours.push(currentlist[currentlist.length - 2])
 
 					neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-					
-					
-					// drawLine(demoSlidesvg,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(demoSlidesvg,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
-					
 
-
+					// drawLine(demoPolySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
+					// drawLine(demoPolySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 				}
 				ranges = []
 
-
-
-				for (ind=0; ind < visitablenodes.length;ind++) {
+				for (ind = 0; ind < visitablenodes.length; ind++) {
 					node = visitablenodes[ind]
-					ranges.push(getPossibilityRange(node, creationNode[node[0]+','+node[1]])[0])
+					ranges.push(getPossibilityRange(node, creationNode[node[0] + ',' + node[1]])[0])
 				}
-
-				
 
 				minvalueindex = indexOfmin(ranges)
 				prevPrange = ranges[minvalueindex]
 
-				
 				nextnode = visitablenodes[minvalueindex]
-
 
 				visitablenodes.splice(minvalueindex, 1);
 
-
-				// drawDot(demoSlidesvg,nextnode[0],nextnode[1], '0.3%', 'violet')
-
+				// drawDot(demoPolySVG,nextnode[0],nextnode[1], '0.3%', 'violet')
 			}
 
 			return triangleData
 
 		}
 
-
-
 		triangleData = formPrism()
 
 		colorchosenStatus = {}
 
-		colorscheme = ['single','analogous','complimentary']
-		colorconfig = [['blue',290,240] ,['orange',70,30],['red',50,3],['violet',335,290]]
+		colorscheme = ['single', 'analogous', 'complimentary']
+		colorconfig = [['blue', 290, 240], ['orange', 70, 30], ['red', 50, 3], ['violet', 335, 290]]
 
-		choice = colorconfig[parseInt(Math.random()*(colorconfig.length))];
-		scheme = colorscheme[parseInt(Math.random()*(colorscheme.length))];
-
+		choice = colorconfig[parseInt(Math.random() * (colorconfig.length))];
+		scheme = colorscheme[parseInt(Math.random() * (colorscheme.length))];
 
 		function drawPrism() {
 			colorchoices = ['rgba(0,0,0,0.3)']
-			for (i=0; i<triangleData.length; i++) {
+			for (i = 0; i < triangleData.length; i++) {
 				ithTriangleSet = triangleData[i]
 				var polyElement = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
-				polypoints = ithTriangleSet[0][0] + ',' +ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
-				polyElement.setAttribute('points',polypoints);
-				polyElement.setAttribute('id','triangleNo' + i);
+				polypoints = ithTriangleSet[0][0] + ',' + ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
+				polyElement.setAttribute('points', polypoints);
+				polyElement.setAttribute('id', 'triangleNo' + i);
 				color = colorPick(Math.round(ithTriangleSet[0][0]), Math.round(ithTriangleSet[0][1]));
 				polyElement.style.fill = color;
 				polyElement.style.strokeWidth = '0.05%';
 				//static stroke color for visible strokes as alternative to strokes using 'fill' color:
 				//polyElement.style.stroke = 'rgba(255,255,255,0.3)';
 				polyElement.style.stroke = color;
-				demoSlidesvg.appendChild(polyElement);
+				demoPolySVG.appendChild(polyElement);
 			}
 		}
 
 		drawPrism()
 
-
-
-		function colorPick(xval,yval) {
-			lvalue = 10 + ((xval/window.innerWidth)*70) + (Math.random() - 0.5)*20
+		function colorPick(xval, yval) {
+			lvalue = 10 + ((xval / window.innerWidth) * 70) + (Math.random() - 0.5) * 20
 			if (scheme == 'single') {
 				hvalue = choice[2]
 			}
 			else if (scheme == 'analogous') {
-				hvalue = choice[1] - ((yval/window.innerHeight)*100)
+				hvalue = choice[1] - ((yval / window.innerHeight) * 100)
 			}
 			else if (scheme == 'complimentary') {
-				if (yval < window.innerHeight/2) {
+				if (yval < window.innerHeight / 2) {
 					hvalue = choice[2] + 180
 				}
 				else {
@@ -528,24 +484,20 @@
 			return 'hsl(' + hvalue + ',' + svalue + '%,' + lvalue + '%)'
 		}
 
-
-
 		function giveColor(event) {
-			var bRect = demoSlidesvg.getBoundingClientRect();
+			var bRect = demoPolySVG.getBoundingClientRect();
 			posX = event.clientX - bRect.left;
 			posY = event.clientY - bRect.top;
-			colorchoice = colorPick(posX,posY)
+			colorchoice = colorPick(posX, posY)
 			event.target.style.fill = colorchoice
 			event.target.style.stroke = colorchoice
-			colorchosenStatus[event.target.id.toString()] = [1,colorPick(posX,posY)]
-			
+			colorchosenStatus[event.target.id.toString()] = [1, colorPick(posX, posY)]
+
 		}
 
 		//comment out to disable color-change on mouseover:
-		demoSlidesvg.addEventListener('mouseover',giveColor);
+		demoPolySVG.addEventListener('mouseover', giveColor);
 
-		</script>
-
-
-	</body>
+	</script>
+</body>
 <html>
