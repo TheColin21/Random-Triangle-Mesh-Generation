@@ -2,7 +2,7 @@
 	<head>
 		<title> Triangle Mesh Generation </title>
 	</head>
-	<body style='margin:0px; display: block:'>
+	<body style='margin:0px; display: block;'>
 		<svg id='demoSVG' height="100%" width="100%" ></svg>
 
 		<script type="text/javascript">
@@ -138,18 +138,6 @@
 
 			return minIndex;
 		}
-
-		function drawText(divId, textdata, xcor, ycor,size) {
-			var textElement = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-			textElement.setAttribute('x',xcor);
-			textElement.setAttribute('y',ycor);
-			textElement.setAttribute('font-size',size);
-			textElement.innerHTML = textdata
-			divId.appendChild(textElement);
-		}
-
-		
-
 
 		
 		
@@ -481,25 +469,6 @@
 
 		triangleData = formPrism()
 
-
-		function drawPrism() {
-			colorchoices = ['rgba(0,0,0,0.3)']
-
-			for (i=0; i<triangleData.length; i++) {
-				ithTriangleSet = triangleData[i]
-				var polyElement = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
-				polypoints = ithTriangleSet[0][0] + ',' +ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
-				polyElement.setAttribute('points',polypoints);
-				polyElement.setAttribute('id','triangleNo' + i);
-				polyElement.style.fill = colorchoices[parseInt(Math.random()*(colorchoices.length))];
-				polyElement.style.strokeWidth = '0.05%';
-				polyElement.style.stroke = 'rgba(255,255,255,0.3)';
-				demoSlidesvg.appendChild(polyElement);
-			}
-		}
-
-		drawPrism()
-
 		colorchosenStatus = {}
 
 		colorscheme = ['single','analogous','complimentary']
@@ -508,7 +477,28 @@
 		choice = colorconfig[parseInt(Math.random()*(colorconfig.length))];
 		scheme = colorscheme[parseInt(Math.random()*(colorscheme.length))];
 
-		
+
+		function drawPrism() {
+			colorchoices = ['rgba(0,0,0,0.3)']
+			for (i=0; i<triangleData.length; i++) {
+				ithTriangleSet = triangleData[i]
+				var polyElement = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+				polypoints = ithTriangleSet[0][0] + ',' +ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
+				polyElement.setAttribute('points',polypoints);
+				polyElement.setAttribute('id','triangleNo' + i);
+				color = colorPick(Math.round(ithTriangleSet[0][0]), Math.round(ithTriangleSet[0][1]));
+				polyElement.style.fill = color;
+				polyElement.style.strokeWidth = '0.05%';
+				//static stroke color for visible strokes as alternative to strokes using 'fill' color:
+				//polyElement.style.stroke = 'rgba(255,255,255,0.3)';
+				polyElement.style.stroke = color;
+				demoSlidesvg.appendChild(polyElement);
+			}
+		}
+
+		drawPrism()
+
+
 
 		function colorPick(xval,yval) {
 			lvalue = 10 + ((xval/window.innerWidth)*70) + (Math.random() - 0.5)*20
@@ -551,6 +541,7 @@
 			
 		}
 
+		//comment out to disable color-change on mouseover:
 		demoSlidesvg.addEventListener('mouseover',giveColor);
 
 		</script>
