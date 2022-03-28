@@ -498,6 +498,44 @@
 		//comment out to disable color-change on mouseover:
 		demoPolySVG.addEventListener('mouseover', giveColor);
 
+		var svgFile = null;
+		makesvgFile = function (text) {
+			var data = new Blob([text], {type: 'image/svg+xml'});
+
+			// If we are replacing a previously generated file we need to
+			// manually revoke the object URL to avoid memory leaks.
+			if (svgFile !== null) {
+			window.URL.revokeObjectURL(svgFile);
+			}
+
+			svgFile = window.URL.createObjectURL(data);
+
+			// returns a URL you can use as a href
+			return svgFile;
+		}
+
+		const download = (path, filename) => {
+			// Create a new link
+			const anchor = document.createElement('a');
+			anchor.href = path;
+			anchor.download = filename;
+
+			// Append to the DOM
+			document.body.appendChild(anchor);
+
+			// Trigger `click` event
+			anchor.click();
+
+			// Remove element from DOM
+			document.body.removeChild(anchor);
+		};
+		document.addEventListener('keydown', function(event) {
+			if (event.ctrlKey && event.key === 's') {
+				event.preventDefault();
+				download(makesvgFile(demoPolySVG.outerHTML), 'image.svg');
+		}
+		});
+		
 	</script>
 </body>
 <html>
