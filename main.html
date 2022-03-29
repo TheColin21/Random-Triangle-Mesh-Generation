@@ -1,16 +1,19 @@
 <html>
 
 <head>
-	<title> Triangle Mesh Generation </title>
+	<title> Triangle SVG Generation </title>
 </head>
 
 <body style='margin:0px; display: block;'>
-	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="720" width="1280"></svg>
+	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="720" width="1280"><defs id="defs1337"></defs></svg>
 
 	<script type="text/javascript">
 
 		demoPolySVG = document.getElementById('polySVG')
 
+		def = document.getElementById('defs1337');
+		gradientIdCount = 0;
+		
 		pointsMemoryPrism = []
 		neighbourConnectionData = {}
 		creationNode = {}
@@ -428,10 +431,10 @@
 
 		triangleData = formPrism()
 
-		colorchosenStatus = {}
-
-		colorscheme = ['single', 'analogous', 'complimentary']
-		colorconfig = [['blue', 290, 240], ['orange', 70, 30], ['red', 50, 3], ['violet', 335, 290]]
+		//disabled color scheme: 'single', 'complimentary-random', doubled chance for 'analogous'
+		colorscheme = ['analogous', 'analogous', 'complimentary']
+		//base-colors: last number is hue, first number is some kind of magic to calculate lightness
+		colorconfig = [['blue', 290, 240], ['orange', 70, 30], ['red', 50, 3], ['violet', 335, 290], ['green', 170, 100]]
 
 		choice = colorconfig[parseInt(Math.random() * (colorconfig.length))];
 		scheme = colorscheme[parseInt(Math.random() * (colorscheme.length))];
@@ -444,12 +447,26 @@
 				polypoints = ithTriangleSet[0][0] + ',' + ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
 				polyElement.setAttribute('points', polypoints);
 				polyElement.setAttribute('id', 'triangleNo' + i);
-				color = colorPick(Math.round(ithTriangleSet[0][0]), Math.round(ithTriangleSet[0][1]));
-				polyElement.style.fill = color;
+				ithTriangleSet = ithTriangleSet.sort((a, b) => a[0] - b[0])
+				color = colorPick(...ithTriangleSet[0].map(Math.round));
+				color2 = colorPick(...ithTriangleSet[0].map(Math.round));
+				var gradient = document.createElementNS("http://www.w3.org/2000/svg", 'linearGradient');
+				gradient.setAttribute('id', 'grad' + gradientIdCount++);
+				var stop1 = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
+				var stop2 = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
+				stop1.setAttribute('offset', '0');
+				stop2.setAttribute('offset', '1');
+				stop1.setAttribute('stop-color', color);
+				stop2.setAttribute('stop-color', color2);
+				gradient.appendChild(stop1);
+				gradient.appendChild(stop2);
+				def.appendChild(gradient);
+				
+				polyElement.style.fill = 'url(#' + gradient.getAttribute('id') + ')';
 				polyElement.style.strokeWidth = '0.05%';
 				//static stroke color for visible strokes as alternative to strokes using 'fill' color:
 				//polyElement.style.stroke = 'rgba(255,255,255,0.3)';
-				polyElement.style.stroke = color;
+				polyElement.style.stroke = 'url(#' + gradient.getAttribute('id') + ')';
 				demoPolySVG.appendChild(polyElement);
 			}
 		}
@@ -457,11 +474,13 @@
 		drawPrism()
 
 		function colorPick(xval, yval) {
+			//calculate lightness, left-->right == dark-->light (xval / window.innerWidth grows)
 			lvalue = 10 + ((xval / window.innerWidth) * 70) + (Math.random() - 0.5) * 20
 			if (scheme == 'single') {
 				hvalue = choice[2]
 			}
 			else if (scheme == 'analogous') {
+				//shifts hue from top to bottom by 100°
 				hvalue = choice[1] - ((yval / window.innerHeight) * 100)
 			}
 			else if (scheme == 'complimentary') {
@@ -490,9 +509,7 @@
 			posY = event.clientY - bRect.top;
 			colorchoice = colorPick(posX, posY)
 			event.target.style.fill = colorchoice
-			event.target.style.stroke = colorchoice
-			colorchosenStatus[event.target.id.toString()] = [1, colorPick(posX, posY)]
-
+			event.target.style.stroke = colorchoice	
 		}
 
 		//comment out to disable color-change on click:
