@@ -5,8 +5,8 @@
 </head>
 
 <body style='margin:0px; display: block;'>
-	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="720" width="1280"><defs id="defs1337"></defs></svg>
-
+	<!-- change download function if you are changing the svg header -->
+	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="100%" width="100%"><defs id="defs1337"></defs></svg>
 	<script type="text/javascript">
 
 		demoPolySVG = document.getElementById('polySVG')
@@ -549,10 +549,10 @@
 		document.addEventListener('keydown', function(event) {
 			if (event.ctrlKey && event.key === 's') {
 				event.preventDefault();
-				download(makesvgFile(demoPolySVG.outerHTML), 'image.svg');
+				download(makesvgFile(demoPolySVG.outerHTML.replace('height="100%" width="100%">', 'height="' + 
+				window.innerHeight + '" width="' + window.innerWidth + '">')), 'image.svg');
 		}
 		});
-		
 	</script>
 </body>
 <html>
