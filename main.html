@@ -531,6 +531,10 @@
 			return svgFile;
 		}
 
+		twoDigitTime = function(time){
+			return ('0' + time).slice(-2)
+		}
+
 		const download = (path, filename) => {
 			// Create a new link
 			const anchor = document.createElement('a');
@@ -549,8 +553,11 @@
 		document.addEventListener('keydown', function(event) {
 			if (event.ctrlKey && event.key === 's') {
 				event.preventDefault();
+				date = new Date()
+				filename = 'svg-' + date.getFullYear() + twoDigitTime(date.getMonth()+1) + twoDigitTime(date.getDate()) + '-' + 
+				twoDigitTime(date.getHours()) + twoDigitTime(date.getMinutes()) + twoDigitTime(date.getSeconds()) + '.svg';
 				download(makesvgFile(demoPolySVG.outerHTML.replace('height="100%" width="100%">', 'height="' + 
-				window.innerHeight + '" width="' + window.innerWidth + '">')), 'image.svg');
+				window.innerHeight + '" width="' + window.innerWidth + '">')), filename);
 		}
 		});
 	</script>
