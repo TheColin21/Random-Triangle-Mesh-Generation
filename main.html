@@ -6,20 +6,29 @@
 
 <body style='margin:0px; display: block;'>
 	<!-- change download function if you are changing the svg header -->
-	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="100%" width="100%"><defs id="defs1337"></defs></svg>
+	<svg xmlns='http://www.w3.org/2000/svg' id='polySVG' height="100%" width="100%">
+		<defs id="defs1337"></defs>
+	</svg>
 	<script type="text/javascript">
+		//configuration values for mesh generation		
+		averagedistance = 90
+		radiusdeviation = 70
+		angledeviation = 40
 
+		//possible color schemes: 'single', 'analogous', 'complementary', 'complimentary-random'
+		//repeat schemes for increased chance
+		colorscheme = ['analogous', 'analogous', 'analogous', 'complimentary']
+
+		//get objects from document
 		polySVG = document.getElementById('polySVG')
-
 		def = document.getElementById('defs1337');
-		gradientIdCount = 0;
-		
+		gradientIdCount = 0; //global counter for gradient IDs
+
 		pointsMemoryPrism = []
 		neighbourConnectionData = {}
 		creationNode = {}
 
-		// From https://stackoverflow.com/questions/22521982/js-check-if-point-inside-a-polygon
-
+		// from https://stackoverflow.com/questions/22521982/js-check-if-point-inside-a-polygon
 		function inside(point, vs) {
 			// ray-casting algorithm based on (original link is down since at least 2020)
 			// https://web.archive.org/web/20180115151705/https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html
@@ -38,11 +47,6 @@
 
 			return inside;
 		};
-
-
-		averagedistance = 90
-		radiusdeviation = 70
-		angledeviation = 40
 
 		function getPossibilityRange(thepoint, mainnode) {
 			connectedpoints = neighbourConnectionData[thepoint[0] + ',' + thepoint[1]].slice()
@@ -85,8 +89,6 @@
 				startingMneigh = connectedpoints[1]
 				endingMneigh = connectedpoints[0]
 			}
-
-
 			return [possibilityrange, between, startingMneigh, endingMneigh, startingcue]
 		}
 
@@ -118,8 +120,6 @@
 
 				}
 			}
-
-
 			return anglevalues
 		}
 
@@ -137,7 +137,6 @@
 					min = arr[i];
 				}
 			}
-
 			return minIndex;
 		}
 
@@ -145,7 +144,6 @@
 			triangleData = []
 
 			angles = pickAngleInRange(360, [0, 390], 1)
-
 
 			initvalue = [Math.random() * window.innerWidth, Math.random() * window.innerHeight];
 			currentvalue = initvalue
@@ -224,9 +222,6 @@
 				mainnodevalue = currentvalue
 				currentvalue = nextnode
 
-				// drawDot(polySVG,currentvalue[0],currentvalue[1], '0.3%', 'blue')
-				// drawText(polySVG,h,currentvalue[0],currentvalue[1],14)
-
 				angles = pickAngleInRange(prange[0], prange[1], prange[4])
 				startingMneigh = prange[2]
 				endingMneigh = prange[3]
@@ -240,27 +235,19 @@
 					xvalue = currentvalue[0] + radius * Math.cos(angle * Math.PI / 180)
 					yvalue = currentvalue[1] + radius * Math.sin(angle * Math.PI / 180)
 
-					if (inside([xvalue, yvalue], visitablenodes)) {
-						// console.log("Point Outside")
-					}
-					else {
+					if (!inside([xvalue, yvalue], visitablenodes)) {
 						pointsList.push([xvalue, yvalue])
 						creationNode[xvalue + ',' + yvalue] = currentvalue
 						if (xvalue <= window.innerWidth * 1.2 && xvalue >= -0.2 * window.innerWidth && yvalue <= window.innerHeight * 1.2 && yvalue >= -0.2 * window.innerHeight) {
 							visitablenodes.push([xvalue, yvalue])
 						}
 						currentlist.push([xvalue, yvalue])
-						// drawLine(polySVG,currentvalue[0],currentvalue[1],xvalue,yvalue,'red','0.4%')
-						// drawDot(polySVG,xvalue,yvalue, '0.3%', 'orange')
-						// drawText(polySVG,1,xvalue,yvalue,10)
 					}
-
 				}
 
 				if (currentlist.length == 0) {
 					currneighbours = neighbourConnectionData[currentvalue[0] + ',' + currentvalue[1]]
 
-					// drawLine(polySVG,currneighbours[0][0],currneighbours[0][1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
 					n1 = currneighbours[0]
 					n1neighbours = neighbourConnectionData[n1[0] + ',' + n1[1]]
 					if (n1neighbours[0][0] == currentvalue[0] && n1neighbours[0][1] == currentvalue[1]) {
@@ -283,16 +270,12 @@
 				}
 
 				else if (currentlist.length == 1) {
-
 					point = currentlist[0]
 					currneighbours = neighbourConnectionData[currentvalue[0] + ',' + currentvalue[1]]
 
 					neighbourConnectionData[point[0] + ',' + point[1]] = currneighbours
 					triangleData.push([currneighbours[0], point, currentvalue])
 					triangleData.push([currneighbours[1], point, currentvalue])
-
-					// drawLine(polySVG,currneighbours[0][0],currneighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(polySVG,point[0],point[1],currneighbours[1][0],currneighbours[1][1],'grey','0.2%')
 
 					sidepoint = currneighbours[0]
 					ngh = neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]].slice();
@@ -317,7 +300,6 @@
 						ngh.splice(1, 1, point);
 						neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]] = ngh
 					}
-
 				}
 
 				else {
@@ -340,11 +322,7 @@
 					}
 
 					neighbours.push(currentlist[1])
-
 					neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-
-					// drawLine(polySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(polySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 
 					for (k = 1; k < currentlist.length - 1; k++) {
 						neighbours = []
@@ -371,15 +349,11 @@
 
 						point = currentlist[k]
 						neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-						// drawLine(polySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-						// drawLine(polySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 						triangleData.push([neighbours[0], point, currentvalue])
 
 					}
 
 					triangleData.push([currentlist[currentlist.length - 2], currentlist[currentlist.length - 1], currentvalue])
-
-
 
 					neighbours = []
 
@@ -390,7 +364,6 @@
 
 					triangleData.push([endingMneigh, point, currentvalue])
 					ngh = neighbourConnectionData[sidepoint[0] + ',' + sidepoint[1]].slice();
-
 
 					if (ngh[0][0] == currentvalue[0] && ngh[0][1] == currentvalue[1]) {
 						ngh.splice(0, 1, point);
@@ -404,9 +377,6 @@
 					neighbours.push(currentlist[currentlist.length - 2])
 
 					neighbourConnectionData[point[0] + ',' + point[1]] = neighbours
-
-					// drawLine(polySVG,neighbours[0][0],neighbours[0][1],point[0],point[1],'grey','0.2%')
-					// drawLine(polySVG,point[0],point[1],neighbours[1][0],neighbours[1][1],'grey','0.2%')
 				}
 				ranges = []
 
@@ -421,35 +391,43 @@
 				nextnode = visitablenodes[minvalueindex]
 
 				visitablenodes.splice(minvalueindex, 1);
-
-				// drawDot(polySVG,nextnode[0],nextnode[1], '0.3%', 'violet')
 			}
-
 			return triangleData
-
 		}
 
 		triangleData = formPrism()
 
-		//disabled color scheme: 'single', 'complimentary-random', tripled chance for 'analogous'
-		colorscheme = ['analogous', 'analogous', 'analogous', 'complimentary']
-		//base-colors: last number is hue, first number is some kind of magic to calculate lightness
-		colorconfig = [['blue', 290, 240], ['orange', 70, 30], ['red', 50, 3], ['violet', 335, 290], ['green', 170, 100]]
+		function randomIntFromInterval(min, max) {
+			return Math.floor(Math.random() * (max - min + 1) + min)
+		}
 
-		choice = colorconfig[parseInt(Math.random() * (colorconfig.length))];
+		//generate random color as one option
+		hue1 = randomIntFromInterval(0, 360); //is second in colorconfig but the "main" color
+		hue2 = hue1 + randomIntFromInterval(10, 100) //slightly larger deviation than in the original color options
+		if (hue2 > 360) hue2 -= 360;
+
+		//base-colors: both are hue-values, no idea why they're chosen that way...
+		//disabled in favor of a completely random choice of base color
+		//colorconfig = [['blue', 290, 240], ['orange', 70, 30], ['red', 50, 3], ['violet', 335, 290], ['green', 150, 100]]
+
+		//choice = colorconfig[parseInt(Math.random() * (colorconfig.length))];
+		choice = ['random', hue2, hue1];
 		scheme = colorscheme[parseInt(Math.random() * (colorscheme.length))];
 
 		function drawPrism() {
-			colorchoices = ['rgba(0,0,0,0.3)']
 			for (i = 0; i < triangleData.length; i++) {
-				ithTriangleSet = triangleData[i]
+				//create polygon element
+				ithTriangleSet = triangleData[i]; //get triangle data for current triangle
 				var polyElement = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
-				polypoints = ithTriangleSet[0][0] + ',' + ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1]
+				polypoints = ithTriangleSet[0][0] + ',' + ithTriangleSet[0][1] + ' ' + ithTriangleSet[1][0] + ',' + ithTriangleSet[1][1] + ' ' + ithTriangleSet[2][0] + ',' + ithTriangleSet[2][1];
 				polyElement.setAttribute('points', polypoints);
 				polyElement.setAttribute('id', 'triangleNo' + i);
+
+				//choose color of polygon
 				ithTriangleSet = ithTriangleSet.sort((a, b) => a[0] - b[0])
 				color = colorPick(...ithTriangleSet[0].map(Math.round));
 				color2 = colorPick(...ithTriangleSet[0].map(Math.round));
+				//create gradient
 				var gradient = document.createElementNS("http://www.w3.org/2000/svg", 'linearGradient');
 				gradient.setAttribute('id', 'grad' + gradientIdCount++);
 				var stop1 = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
@@ -458,15 +436,19 @@
 				stop2.setAttribute('offset', '1');
 				stop1.setAttribute('stop-color', color);
 				stop2.setAttribute('stop-color', color2);
+				//attach colors to gradient and gradient to <defs> section of the svg
 				gradient.appendChild(stop1);
 				gradient.appendChild(stop2);
 				def.appendChild(gradient);
-				
+
+				//attach gradient to polygon
 				polyElement.style.fill = 'url(#' + gradient.getAttribute('id') + ')';
 				polyElement.style.strokeWidth = '0.05%';
 				//static stroke color for visible strokes as alternative to strokes using 'fill' color:
 				//polyElement.style.stroke = 'rgba(255,255,255,0.3)';
 				polyElement.style.stroke = 'url(#' + gradient.getAttribute('id') + ')';
+
+				//attach polygon to svg
 				polySVG.appendChild(polyElement);
 			}
 		}
@@ -475,7 +457,8 @@
 
 		function colorPick(xval, yval) {
 			//calculate lightness, left-->right == dark-->light (xval / window.innerWidth grows)
-			lvalue = 10 + ((xval / window.innerWidth) * 50) + (Math.random() - 0.5) * 20
+			lvalue = 10 + ((xval / window.innerWidth) * 40) + (Math.random() - 0.5) * 20
+			//calculate hue-values based on different strategies
 			if (scheme == 'single') {
 				hvalue = choice[2]
 			}
@@ -499,30 +482,31 @@
 					hvalue = choice[2]
 				}
 			}
-			svalue = 100
+			svalue = 100 //always full saturation
 			return 'hsl(' + hvalue + ',' + svalue + '%,' + lvalue + '%)'
 		}
 
-		function giveColor(event) {
+		function giveColor(event) { //unused if the eventListener below is disabled
 			var bRect = polySVG.getBoundingClientRect();
 			posX = event.clientX - bRect.left;
 			posY = event.clientY - bRect.top;
 			colorchoice = colorPick(posX, posY)
 			event.target.style.fill = colorchoice
-			event.target.style.stroke = colorchoice	
+			event.target.style.stroke = colorchoice
 		}
 
 		//remove comment to enable solid color-change on click:
 		//polySVG.addEventListener('click', giveColor);
 
+		//create URL to a blob containing the current SVG file
 		var svgFile = null;
 		makesvgFile = function (text) {
-			var data = new Blob([text], {type: 'image/svg+xml'});
+			var data = new Blob([text], { type: 'image/svg+xml' });
 
 			// If we are replacing a previously generated file we need to
 			// manually revoke the object URL to avoid memory leaks.
 			if (svgFile !== null) {
-			window.URL.revokeObjectURL(svgFile);
+				window.URL.revokeObjectURL(svgFile);
 			}
 
 			svgFile = window.URL.createObjectURL(data);
@@ -531,10 +515,11 @@
 			return svgFile;
 		}
 
-		twoDigitTime = function(time){
+		twoDigitTime = function (time) {
 			return ('0' + time).slice(-2)
 		}
 
+		//download the generated SVG instead of the webpage when pressing CTRL+S
 		const download = (path, filename) => {
 			// Create a new link
 			const anchor = document.createElement('a');
@@ -550,15 +535,19 @@
 			// Remove element from DOM
 			document.body.removeChild(anchor);
 		};
-		document.addEventListener('keydown', function(event) {
+		document.addEventListener('keydown', function (event) {
+			//listen to CTRL + S
 			if (event.ctrlKey && event.key === 's') {
-				event.preventDefault();
-				date = new Date()
-				filename = 'svg-' + date.getFullYear() + twoDigitTime(date.getMonth()+1) + twoDigitTime(date.getDate()) + '-' + 
-				twoDigitTime(date.getHours()) + twoDigitTime(date.getMinutes()) + twoDigitTime(date.getSeconds()) + '.svg';
-				download(makesvgFile(polySVG.outerHTML.replace('height="100%" width="100%">', 'height="' + 
-				window.innerHeight + '" width="' + window.innerWidth + '">')), filename);
-		}
+				event.preventDefault(); //prevent the download web-page dialogue from appearing
+				date = new Date();
+				//build filename in format 'svg-YYMMDD-HHMMSS.svg'
+				filename = 'svg-' + date.getFullYear() + twoDigitTime(date.getMonth() + 1) + twoDigitTime(date.getDate()) + '-' +
+					twoDigitTime(date.getHours()) + twoDigitTime(date.getMinutes()) + twoDigitTime(date.getSeconds()) + '.svg';
+				//trigger download action and replace the height and width (100%) values of the svg with the viewport dimensions
+				//the replacing option is quite dirty... but it works
+				download(makesvgFile(polySVG.outerHTML.replace('height="100%" width="100%">', 'height="' +
+					window.innerHeight + '" width="' + window.innerWidth + '">')), filename);
+			}
 		});
 	</script>
 </body>
